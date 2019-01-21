@@ -1,0 +1,28 @@
+{
+  "name": "ngx-app-tour",
+  "version": "1.2.0",
+  "repository": "https://github.com/hamdiwanis/ngx-app-tour.git",
+  "author": "Hamdi wanis <hamdiwanis@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "withinviewport": "^2.0.0",
+    "tslib": "^1.9.0"
+  },
+  "peerDependencies": {
+    "@angular/common": "^7.0.0",
+    "@angular/cdk": "^7.0.0",
+    "@angular/core": "^7.0.0",
+    "@angular/router": "^7.0.0",
+    "rxjs": "^6.0.0"
+  },
+  "main": "bundles/ngx-app-tour.umd.js",
+  "module": "fesm5/ngx-app-tour.js",
+  "es2015": "fesm2015/ngx-app-tour.js",
+  "esm5": "esm5/ngx-app-tour.js",
+  "esm2015": "esm2015/ngx-app-tour.js",
+  "fesm5": "fesm5/ngx-app-tour.js",
+  "fesm2015": "fesm2015/ngx-app-tour.js",
+  "typings": "ngx-app-tour.d.ts",
+  "metadata": "ngx-app-tour.metadata.json",
+  "sideEffects": false
+}
