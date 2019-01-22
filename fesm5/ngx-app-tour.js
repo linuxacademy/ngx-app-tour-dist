@@ -1,13 +1,14 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import '@angular/cdk/keycodes';
+import { NavigationStart, Router } from '@angular/router';
+import { BehaviorSubject, Subscription, Subject, merge } from 'rxjs';
+import withinviewport from 'withinviewport';
+import { distinctUntilChanged, first, map, filter } from 'rxjs/operators';
+import { __extends, __values, __assign, __spread } from 'tslib';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import { NavigationStart, Router } from '@angular/router';
-import { BehaviorSubject, Subject, merge } from 'rxjs';
-import withinviewport from 'withinviewport';
-import { distinctUntilChanged, takeUntil, first, map, filter } from 'rxjs/operators';
-import { __extends, __spread, __values, __assign } from 'tslib';
-import { ChangeDetectorRef, Component, ContentChild, EventEmitter, Input, Output, TemplateRef, ViewChild, ComponentFactoryResolver, Directive, ElementRef, HostBinding, Optional, Renderer2, ViewContainerRef, NgModule, Injectable, HostListener, RendererFactory2, Injector } from '@angular/core';
+import { TemplateRef, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, Input, Output, ViewChild, ViewEncapsulation, ComponentFactoryResolver, Directive, ElementRef, Optional, Renderer2, ViewContainerRef, NgModule, Injectable, HostListener, RendererFactory2, HostBinding, Injector } from '@angular/core';
 
 /**
  * @fileoverview added by tsickle
@@ -21,6 +22,167 @@ var fadeAnimation = trigger('fadeAnimation', [
     transition('* => true', animate('150ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
     transition('* => void', animate('150ms cubic-bezier(0.4, 0.0, 1, 1)')),
 ]);
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+// tslint:disable-next-line:no-any
+/**
+ * @param {?} value
+ * @return {?}
+ */
+function isNotNil(value) {
+    return (typeof (value) !== 'undefined') && value !== null;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @param {?} value
+ * @return {?}
+ */
+function toBoolean(value) {
+    return coerceBooleanProperty(value);
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzGlobalMonitorService = /** @class */ (function () {
+    function NzGlobalMonitorService() {
+        this.counter = 0;
+        this.lastClickPos = {
+            x: 0,
+            y: 0
+        };
+        this._navItemSource = new EventEmitter();
+        this._observeGlobalEvents();
+    }
+    /**
+     * @return {?}
+     */
+    NzGlobalMonitorService.prototype.getGlobalCount = /**
+     * @return {?}
+     */
+    function () {
+        return ++this.counter;
+    };
+    /**
+     * @param {?} status
+     * @return {?}
+     */
+    NzGlobalMonitorService.prototype.setDocumentOverflowHidden = /**
+     * @param {?} status
+     * @return {?}
+     */
+    function (status) {
+        document.body.style.overflow = status ? 'hidden' : '';
+    };
+    /**
+     * @return {?}
+     */
+    NzGlobalMonitorService.prototype._observeGlobalEvents = /**
+     * @return {?}
+     */
+    function () {
+        var _this = this;
+        // 监听document的点击事件，记录点击坐标，并抛出 documentClick 事件
+        document.addEventListener('click', function (e) {
+            _this.lastClickPos = {
+                x: e.clientX,
+                y: e.clientY
+            };
+            _this._navItemSource.emit('documentClick');
+        });
+    };
+    return NzGlobalMonitorService;
+}());
+new NzGlobalMonitorService();
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/** @type {?} */
+var isBrowser = (typeof window !== 'undefined');
+// tslint:disable-next-line:no-any
+/** @type {?} */
+var isFirefox = (isBrowser && ((/** @type {?} */ (window))).mozInnerScreenX != null);
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+// tslint:disable:no-any typedef no-invalid-this
+/** @type {?} */
+var availablePrefixs = ['moz', 'ms', 'webkit'];
+/**
+ * @return {?}
+ */
+function requestAnimationFramePolyfill() {
+    /** @type {?} */
+    var lastTime = 0;
+    return function (callback) {
+        /** @type {?} */
+        var currTime = new Date().getTime();
+        /** @type {?} */
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        /** @type {?} */
+        var id = window.setTimeout(function () {
+            callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+}
+/**
+ * @return {?}
+ */
+function getRequestAnimationFrame() {
+    if (typeof window === 'undefined') {
+        return function () { return null; };
+    }
+    if (window.requestAnimationFrame) {
+        // https://github.com/vuejs/vue/issues/4465
+        return window.requestAnimationFrame.bind(window);
+    }
+    /** @type {?} */
+    var prefix = availablePrefixs.filter(function (key) { return key + "RequestAnimationFrame" in window; })[0];
+    return prefix
+        ? window[prefix + "RequestAnimationFrame"]
+        : requestAnimationFramePolyfill();
+}
+/** @type {?} */
+var reqAnimFrame = getRequestAnimationFrame();
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle
@@ -160,57 +322,26 @@ function _objectValues(object) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-/**
- * @param {?} value
- * @return {?}
- */
-function toBoolean(value) {
-    return coerceBooleanProperty(value);
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-var NzPopoverComponent = /** @class */ (function () {
-    function NzPopoverComponent(cdr) {
+var NzToolTipComponent = /** @class */ (function () {
+    function NzToolTipComponent(cdr) {
         this.cdr = cdr;
         this._hasBackdrop = false;
-        this._prefix = 'ant-popover-placement';
+        this._prefix = 'ant-tooltip-placement';
         this._positions = __spread(DEFAULT_4_POSITIONS);
         this._classMap = {};
         this._placement = 'top';
         this._trigger = 'hover';
         this.visibleSource = new BehaviorSubject(false);
         this.visible$ = this.visibleSource.asObservable();
-        this.nzVisibleChange = new EventEmitter();
         this.nzOverlayClassName = '';
         this.nzOverlayStyle = {};
-        this.nzMouseEnterDelay = 0.15; // Unit: second
-        // Unit: second
-        this.nzMouseLeaveDelay = 0.1; // Unit: second
+        this.nzMouseEnterDelay = 0.15; // second
+        // second
+        this.nzMouseLeaveDelay = 0.1; // second
+        // second
+        this.nzVisibleChange = new EventEmitter();
     }
-    Object.defineProperty(NzPopoverComponent.prototype, "nzContent", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._content;
-        },
-        set: 
-        // Unit: second
-        /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this.isContentString = !(value instanceof TemplateRef);
-            this._content = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverComponent.prototype, "nzVisible", {
+    Object.defineProperty(NzToolTipComponent.prototype, "nzVisible", {
         get: /**
          * @return {?}
          */
@@ -232,7 +363,7 @@ var NzPopoverComponent = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(NzPopoverComponent.prototype, "nzTrigger", {
+    Object.defineProperty(NzToolTipComponent.prototype, "nzTrigger", {
         get: /**
          * @return {?}
          */
@@ -250,7 +381,7 @@ var NzPopoverComponent = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(NzPopoverComponent.prototype, "nzPlacement", {
+    Object.defineProperty(NzToolTipComponent.prototype, "nzPlacement", {
         get: /**
          * @return {?}
          */
@@ -275,7 +406,7 @@ var NzPopoverComponent = /** @class */ (function () {
     /**
      * @return {?}
      */
-    NzPopoverComponent.prototype.updatePosition = 
+    NzToolTipComponent.prototype.updatePosition = 
     // Manually force updating current overlay's position
     /**
      * @return {?}
@@ -289,7 +420,7 @@ var NzPopoverComponent = /** @class */ (function () {
      * @param {?} $event
      * @return {?}
      */
-    NzPopoverComponent.prototype.onPositionChange = /**
+    NzToolTipComponent.prototype.onPositionChange = /**
      * @param {?} $event
      * @return {?}
      */
@@ -307,16 +438,18 @@ var NzPopoverComponent = /** @class */ (function () {
     /**
      * @return {?}
      */
-    NzPopoverComponent.prototype.show = /**
+    NzToolTipComponent.prototype.show = /**
      * @return {?}
      */
     function () {
-        this.nzVisible = true;
+        if (!this.isContentEmpty()) {
+            this.nzVisible = true;
+        }
     };
     /**
      * @return {?}
      */
-    NzPopoverComponent.prototype.hide = /**
+    NzToolTipComponent.prototype.hide = /**
      * @return {?}
      */
     function () {
@@ -326,7 +459,7 @@ var NzPopoverComponent = /** @class */ (function () {
      * @param {?} e
      * @return {?}
      */
-    NzPopoverComponent.prototype._afterVisibilityAnimation = /**
+    NzToolTipComponent.prototype._afterVisibilityAnimation = /**
      * @param {?} e
      * @return {?}
      */
@@ -341,7 +474,7 @@ var NzPopoverComponent = /** @class */ (function () {
     /**
      * @return {?}
      */
-    NzPopoverComponent.prototype.setClassMap = /**
+    NzToolTipComponent.prototype.setClassMap = /**
      * @return {?}
      */
     function () {
@@ -355,18 +488,89 @@ var NzPopoverComponent = /** @class */ (function () {
      * @param {?} origin
      * @return {?}
      */
-    NzPopoverComponent.prototype.setOverlayOrigin = /**
+    NzToolTipComponent.prototype.setOverlayOrigin = /**
      * @param {?} origin
      * @return {?}
      */
     function (origin) {
         this.overlayOrigin = origin;
     };
+    /**
+     * @protected
+     * @return {?}
+     */
+    NzToolTipComponent.prototype.isContentEmpty = /**
+     * @protected
+     * @return {?}
+     */
+    function () {
+        return this.nzTitle instanceof TemplateRef ? false : (this.nzTitle === '' || !isNotNil(this.nzTitle));
+    };
+    NzToolTipComponent.decorators = [
+        { type: Component, args: [{
+                    changeDetection: ChangeDetectionStrategy.OnPush,
+                    encapsulation: ViewEncapsulation.None,
+                    selector: 'nz-tooltip',
+                    animations: [fadeAnimation],
+                    template: "<ng-content></ng-content>\n<ng-template\n  #overlay=\"cdkConnectedOverlay\"\n  cdkConnectedOverlay\n  [cdkConnectedOverlayOrigin]=\"overlayOrigin\"\n  [cdkConnectedOverlayOpen]=\"visible$ | async\"\n  [cdkConnectedOverlayHasBackdrop]=\"_hasBackdrop\"\n  [cdkConnectedOverlayPositions]=\"_positions\"\n  (backdropClick)=\"hide()\"\n  (detach)=\"hide()\"\n  (positionChange)=\"onPositionChange($event)\">\n  <div\n    class=\"ant-tooltip\"\n    [ngClass]=\"_classMap\"\n    [ngStyle]=\"nzOverlayStyle\"\n    [@fadeAnimation]=\"''+(visible$ | async)\"\n    (@fadeAnimation.done)=\"_afterVisibilityAnimation($event)\">\n    <div class=\"ant-tooltip-content\">\n      <div class=\"ant-tooltip-arrow\"></div>\n      <div class=\"ant-tooltip-inner\">\n        <ng-container *nzStringTemplateOutlet=\"nzTitle\">{{ nzTitle }}</ng-container>\n      </div>\n    </div>\n  </div>\n</ng-template>",
+                    preserveWhitespaces: false,
+                    styles: ["\n    .ant-tooltip {\n      position: relative;\n    }\n  "]
+                }] }
+    ];
+    /** @nocollapse */
+    NzToolTipComponent.ctorParameters = function () { return [
+        { type: ChangeDetectorRef }
+    ]; };
+    NzToolTipComponent.propDecorators = {
+        overlay: [{ type: ViewChild, args: ['overlay',] }],
+        nzTitle: [{ type: Input }, { type: ContentChild, args: ['nzTemplate',] }],
+        nzOverlayClassName: [{ type: Input }],
+        nzOverlayStyle: [{ type: Input }],
+        nzMouseEnterDelay: [{ type: Input }],
+        nzMouseLeaveDelay: [{ type: Input }],
+        nzVisibleChange: [{ type: Output }],
+        nzVisible: [{ type: Input }],
+        nzTrigger: [{ type: Input }],
+        nzPlacement: [{ type: Input }]
+    };
+    return NzToolTipComponent;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzPopoverComponent = /** @class */ (function (_super) {
+    __extends(NzPopoverComponent, _super);
+    function NzPopoverComponent(cdr) {
+        var _this = _super.call(this, cdr) || this;
+        _this._prefix = 'ant-popover-placement';
+        return _this;
+    }
+    /**
+     * @protected
+     * @return {?}
+     */
+    NzPopoverComponent.prototype.isContentEmpty = /**
+     * @protected
+     * @return {?}
+     */
+    function () {
+        /** @type {?} */
+        var isTitleEmpty = this.nzTitle instanceof TemplateRef ? false : (this.nzTitle === '' || !isNotNil(this.nzTitle));
+        /** @type {?} */
+        var isContentEmpty = this.nzContent instanceof TemplateRef ? false : (this.nzContent === '' || !isNotNil(this.nzContent));
+        return isTitleEmpty && isContentEmpty;
+    };
     NzPopoverComponent.decorators = [
         { type: Component, args: [{
                     selector: 'nz-popover',
-                    template: '',
-                    preserveWhitespaces: false
+                    animations: [fadeAnimation],
+                    template: "<ng-content></ng-content>\n<ng-template\n  #overlay=\"cdkConnectedOverlay\"\n  cdkConnectedOverlay\n  [cdkConnectedOverlayOrigin]=\"overlayOrigin\"\n  [cdkConnectedOverlayHasBackdrop]=\"_hasBackdrop\"\n  (backdropClick)=\"hide()\"\n  (detach)=\"hide()\"\n  (positionChange)=\"onPositionChange($event)\"\n  [cdkConnectedOverlayPositions]=\"_positions\"\n  [cdkConnectedOverlayOpen]=\"visible$ | async\">\n  <div class=\"ant-popover\" [ngClass]=\"_classMap\" [ngStyle]=\"nzOverlayStyle\" [@fadeAnimation]=\"''+(visible$ | async)\"\n    (@fadeAnimation.done)=\"_afterVisibilityAnimation($event)\">\n    <div class=\"ant-popover-content\">\n      <div class=\"ant-popover-arrow\"></div>\n      <div class=\"ant-popover-inner\">\n        <div class=\"ant-popover-title\" *ngIf=\"nzTitle\">\n          <ng-container *nzStringTemplateOutlet=\"nzTitle\">{{ nzTitle }}</ng-container>\n        </div>\n        <div class=\"ant-popover-inner-content\">\n          <ng-container *nzStringTemplateOutlet=\"nzContent\">{{ nzContent }}</ng-container>\n        </div>\n      </div>\n    </div>\n  </div>\n</ng-template>",
+                    changeDetection: ChangeDetectionStrategy.OnPush,
+                    encapsulation: ViewEncapsulation.None,
+                    preserveWhitespaces: false,
+                    styles: ["\n    .ant-popover {\n      position: relative;\n    }\n  "]
                 }] }
     ];
     /** @nocollapse */
@@ -374,313 +578,68 @@ var NzPopoverComponent = /** @class */ (function () {
         { type: ChangeDetectorRef }
     ]; };
     NzPopoverComponent.propDecorators = {
-        _content: [{ type: ContentChild, args: ['nzTemplate',] }],
-        overlay: [{ type: ViewChild, args: ['overlay',] }],
-        nzVisibleChange: [{ type: Output }],
-        nzOverlayClassName: [{ type: Input }],
-        nzOverlayStyle: [{ type: Input }],
-        nzMouseEnterDelay: [{ type: Input }],
-        nzMouseLeaveDelay: [{ type: Input }],
-        nzContent: [{ type: Input }],
-        nzVisible: [{ type: Input }],
-        nzTrigger: [{ type: Input }],
-        nzPlacement: [{ type: Input }]
+        nzTitle: [{ type: Input }, { type: ContentChild, args: ['neverUsedTemplate',] }],
+        nzContent: [{ type: Input }, { type: ContentChild, args: ['nzTemplate',] }]
     };
     return NzPopoverComponent;
-}());
+}(NzToolTipComponent));
 
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
-// tslint:disable-next-line:no-any
-/**
- * @param {?} value
- * @return {?}
- */
-function isNotNil(value) {
-    return (typeof (value) !== 'undefined') && value !== null;
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
- */
-var NzPopoverDirective = /** @class */ (function () {
-    function NzPopoverDirective(elementRef, hostView, resolver, renderer, tooltip) {
+var NzTooltipDirective = /** @class */ (function () {
+    function NzTooltipDirective(elementRef, hostView, resolver, renderer, tooltip) {
         this.elementRef = elementRef;
         this.hostView = hostView;
         this.resolver = resolver;
         this.renderer = renderer;
         this.tooltip = tooltip;
-        this.unsubscribe$ = new Subject();
         // [NOTE] Here hard coded, and nzTitle used only under NzTooltipDirective currently.
         this.isTooltipOpen = false;
         this.isDynamicTooltip = false; // Indicate whether current tooltip is dynamic created
-        this.factory = this.resolver.resolveComponentFactory(NzPopoverComponent);
+        this.factory = this.resolver.resolveComponentFactory(NzToolTipComponent);
+        /**
+         * Names of properties that should be proxy to child component.
+         */
+        this.needProxyProperties = [
+            'nzTitle',
+            'nzContent',
+            'nzOverlayClassName',
+            'nzOverlayStyle',
+            'nzMouseEnterDelay',
+            'nzMouseLeaveDelay',
+            'nzVisible',
+            'nzTrigger',
+            'nzPlacement'
+        ];
+        this.subs_ = new Subscription();
         this.nzVisibleChange = new EventEmitter();
     }
-    Object.defineProperty(NzPopoverDirective.prototype, "nzTitle", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._title;
-        },
+    Object.defineProperty(NzTooltipDirective.prototype, "setTitle", {
         set: /**
          * @param {?} title
          * @return {?}
          */
-        function (title) {
-            this._title = title;
-            this.updateCompValue('nzTitle', title);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "setTitle", {
-        set: /**
-         * @param {?} title
-         * @return {?}
-         */
-        function (title) {
-            this.nzTitle = title;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzContent", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._content;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._content = value;
-            this.updateCompValue('nzContent', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzOverlayClassName", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._overlayClassName;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._overlayClassName = value;
-            this.updateCompValue('nzOverlayClassName', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzOverlayStyle", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._overlayStyle;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._overlayStyle = value;
-            this.updateCompValue('nzOverlayStyle', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzMouseEnterDelay", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._mouseEnterDelay;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._mouseEnterDelay = value;
-            this.updateCompValue('nzMouseEnterDelay', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzMouseLeaveDelay", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._mouseEnterDelay;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._mouseLeaveDelay = value;
-            this.updateCompValue('nzMouseLeaveDelay', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzVisible", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._visible;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._visible = value;
-            this.updateCompValue('nzVisible', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzTrigger", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._trigger;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._trigger = value;
-            this.updateCompValue('nzTrigger', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "nzPlacement", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this._placement;
-        },
-        set: /**
-         * @param {?} value
-         * @return {?}
-         */
-        function (value) {
-            this._placement = value;
-            this.updateCompValue('nzPlacement', value);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(NzPopoverDirective.prototype, "isOpen", {
-        get: /**
-         * @return {?}
-         */
-        function () {
-            return this.isTooltipOpen;
-        },
+        function (title) { this.nzTitle = title; },
         enumerable: true,
         configurable: true
     });
     /**
-     * @private
+     * @param {?} changes
      * @return {?}
      */
-    NzPopoverDirective.prototype.show = /**
-     * @private
+    NzTooltipDirective.prototype.ngOnChanges = /**
+     * @param {?} changes
      * @return {?}
      */
-    function () {
-        this.tooltip.show();
-        this.isTooltipOpen = true;
-    };
-    /**
-     * @private
-     * @return {?}
-     */
-    NzPopoverDirective.prototype.hide = /**
-     * @private
-     * @return {?}
-     */
-    function () {
-        this.tooltip.hide();
-        this.isTooltipOpen = false;
-    };
-    /**
-     * @private
-     * @param {?} isOrigin
-     * @param {?} isEnter
-     * @param {?=} delay
-     * @return {?}
-     */
-    NzPopoverDirective.prototype.delayEnterLeave = /**
-     * @private
-     * @param {?} isOrigin
-     * @param {?} isEnter
-     * @param {?=} delay
-     * @return {?}
-     */
-    function (isOrigin, isEnter, delay) {
-        var _this = this;
-        if (delay === void 0) { delay = -1; }
-        if (this.delayTimer) { // Clear timer during the delay time
-            window.clearTimeout(this.delayTimer);
-            this.delayTimer = null;
-        }
-        else if (delay > 0) {
-            this.delayTimer = window.setTimeout(function () {
-                _this.delayTimer = null;
-                isEnter ? _this.show() : _this.hide();
-            }, delay * 1000);
-        }
-        else {
-            isEnter && isOrigin ? this.show() : this.hide(); // [Compatible] The "isOrigin" is used due to the tooltip will not hide immediately (may caused by the fade-out animation)
-        }
-    };
-    // tslint:disable-next-line:no-any
-    // tslint:disable-next-line:no-any
-    /**
-     * @param {?} key
-     * @param {?} value
-     * @return {?}
-     */
-    NzPopoverDirective.prototype.updateCompValue = 
-    // tslint:disable-next-line:no-any
-    /**
-     * @param {?} key
-     * @param {?} value
-     * @return {?}
-     */
-    function (key, value) {
-        if (this.isDynamicTooltip && isNotNil(value)) {
-            this.tooltip[key] = value;
-        }
+    function (changes) {
+        this.updateProxies(changes);
     };
     /**
      * @return {?}
      */
-    NzPopoverDirective.prototype.ngOnInit = /**
+    NzTooltipDirective.prototype.ngOnInit = /**
      * @return {?}
      */
     function () {
@@ -693,20 +652,20 @@ var NzPopoverDirective = /** @class */ (function () {
             // Remove element when use directive https://github.com/NG-ZORRO/ng-zorro-antd/issues/1967
             this.renderer.removeChild(this.renderer.parentNode(this.elementRef.nativeElement), tooltipComponent.location.nativeElement);
             this.isDynamicTooltip = true;
+            this.needProxyProperties.forEach(function (property) { return _this.updateCompValue(property, _this[property]); });
             /** @type {?} */
-            var properties = ['nzTitle', 'nzContent', 'nzOverlayClassName', 'nzOverlayStyle', 'nzMouseEnterDelay', 'nzMouseLeaveDelay', 'nzVisible', 'nzTrigger', 'nzPlacement'];
-            properties.forEach(function (property) { return _this.updateCompValue(property, _this[property]); });
-            this.tooltip.nzVisibleChange.pipe(takeUntil(this.unsubscribe$), distinctUntilChanged()).subscribe(function (data) {
-                _this._visible = data;
+            var visible_ = this.tooltip.nzVisibleChange.pipe(distinctUntilChanged()).subscribe(function (data) {
+                _this.visible = data;
                 _this.nzVisibleChange.emit(data);
             });
+            this.subs_.add(visible_);
         }
         this.tooltip.setOverlayOrigin(this);
     };
     /**
      * @return {?}
      */
-    NzPopoverDirective.prototype.ngAfterViewInit = /**
+    NzTooltipDirective.prototype.ngAfterViewInit = /**
      * @return {?}
      */
     function () {
@@ -738,16 +697,165 @@ var NzPopoverDirective = /** @class */ (function () {
     /**
      * @return {?}
      */
-    NzPopoverDirective.prototype.ngOnDestroy = /**
+    NzTooltipDirective.prototype.ngOnDestroy = /**
      * @return {?}
      */
     function () {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
+        this.subs_.unsubscribe();
     };
+    // tslint:disable-next-line:no-any
+    // tslint:disable-next-line:no-any
+    /**
+     * @protected
+     * @param {?} key
+     * @param {?} value
+     * @return {?}
+     */
+    NzTooltipDirective.prototype.updateCompValue = 
+    // tslint:disable-next-line:no-any
+    /**
+     * @protected
+     * @param {?} key
+     * @param {?} value
+     * @return {?}
+     */
+    function (key, value) {
+        if (this.isDynamicTooltip && isNotNil(value)) {
+            this.tooltip[key] = value;
+        }
+    };
+    /**
+     * @private
+     * @return {?}
+     */
+    NzTooltipDirective.prototype.show = /**
+     * @private
+     * @return {?}
+     */
+    function () {
+        this.tooltip.show();
+        this.isTooltipOpen = true;
+    };
+    /**
+     * @private
+     * @return {?}
+     */
+    NzTooltipDirective.prototype.hide = /**
+     * @private
+     * @return {?}
+     */
+    function () {
+        this.tooltip.hide();
+        this.isTooltipOpen = false;
+    };
+    /**
+     * @private
+     * @param {?} isOrigin
+     * @param {?} isEnter
+     * @param {?=} delay
+     * @return {?}
+     */
+    NzTooltipDirective.prototype.delayEnterLeave = /**
+     * @private
+     * @param {?} isOrigin
+     * @param {?} isEnter
+     * @param {?=} delay
+     * @return {?}
+     */
+    function (isOrigin, isEnter, delay) {
+        var _this = this;
+        if (delay === void 0) { delay = -1; }
+        if (this.delayTimer) { // Clear timer during the delay time
+            window.clearTimeout(this.delayTimer);
+            this.delayTimer = null;
+        }
+        else if (delay > 0) {
+            this.delayTimer = window.setTimeout(function () {
+                _this.delayTimer = null;
+                isEnter ? _this.show() : _this.hide();
+            }, delay * 1000);
+        }
+        else {
+            isEnter && isOrigin ? this.show() : this.hide(); // [Compatible] The "isOrigin" is used due to the tooltip will not hide immediately (may caused by the fade-out animation)
+        }
+    };
+    /**
+     * Set inputs of child components when this component's inputs change.
+     * @param changes
+     */
+    /**
+     * Set inputs of child components when this component's inputs change.
+     * @private
+     * @param {?} changes
+     * @return {?}
+     */
+    NzTooltipDirective.prototype.updateProxies = /**
+     * Set inputs of child components when this component's inputs change.
+     * @private
+     * @param {?} changes
+     * @return {?}
+     */
+    function (changes) {
+        var _this = this;
+        if (this.tooltip) {
+            Object.keys(changes).forEach(function (key) {
+                /** @type {?} */
+                var change = changes[key];
+                if (change) {
+                    _this.updateCompValue(key, change.currentValue);
+                }
+            });
+        }
+    };
+    NzTooltipDirective.decorators = [
+        { type: Directive, args: [{
+                    selector: '[nz-tooltip]',
+                    host: {
+                        '[class.ant-tooltip-open]': 'isTooltipOpen'
+                    }
+                },] }
+    ];
+    /** @nocollapse */
+    NzTooltipDirective.ctorParameters = function () { return [
+        { type: ElementRef },
+        { type: ViewContainerRef },
+        { type: ComponentFactoryResolver },
+        { type: Renderer2 },
+        { type: NzToolTipComponent, decorators: [{ type: Optional }] }
+    ]; };
+    NzTooltipDirective.propDecorators = {
+        nzVisibleChange: [{ type: Output }],
+        nzTitle: [{ type: Input, args: ['nz-tooltip',] }],
+        setTitle: [{ type: Input, args: ['nzTitle',] }],
+        nzContent: [{ type: Input }],
+        nzMouseEnterDelay: [{ type: Input }],
+        nzMouseLeaveDelay: [{ type: Input }],
+        nzOverlayClassName: [{ type: Input }],
+        nzOverlayStyle: [{ type: Input }],
+        nzTrigger: [{ type: Input }],
+        nzVisible: [{ type: Input }],
+        nzPlacement: [{ type: Input }]
+    };
+    return NzTooltipDirective;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzPopoverDirective = /** @class */ (function (_super) {
+    __extends(NzPopoverDirective, _super);
+    function NzPopoverDirective(elementRef, hostView, resolver, renderer, tooltip) {
+        var _this = _super.call(this, elementRef, hostView, resolver, renderer, tooltip) || this;
+        _this.factory = _this.resolver.resolveComponentFactory(NzPopoverComponent);
+        return _this;
+    }
     NzPopoverDirective.decorators = [
         { type: Directive, args: [{
-                    selector: '[nz-popover]'
+                    selector: '[nz-popover]',
+                    host: {
+                        '[class.ant-popover-open]': 'isTooltipOpen'
+                    }
                 },] }
     ];
     /** @nocollapse */
@@ -758,21 +866,142 @@ var NzPopoverDirective = /** @class */ (function () {
         { type: Renderer2 },
         { type: NzPopoverComponent, decorators: [{ type: Optional }] }
     ]; };
-    NzPopoverDirective.propDecorators = {
-        nzVisibleChange: [{ type: Output }],
-        nzTitle: [{ type: Input, args: ['nz-tooltip',] }],
-        setTitle: [{ type: Input, args: ['nzTitle',] }],
-        nzContent: [{ type: Input }],
-        nzOverlayClassName: [{ type: Input }],
-        nzOverlayStyle: [{ type: Input }],
-        nzMouseEnterDelay: [{ type: Input }],
-        nzMouseLeaveDelay: [{ type: Input }],
-        nzVisible: [{ type: Input }],
-        nzTrigger: [{ type: Input }],
-        nzPlacement: [{ type: Input }],
-        isOpen: [{ type: HostBinding, args: ['class.ant-tooltip-open',] }]
-    };
     return NzPopoverDirective;
+}(NzTooltipDirective));
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzClassListAddDirective = /** @class */ (function () {
+    function NzClassListAddDirective(elementRef, renderer) {
+        this.elementRef = elementRef;
+        this.renderer = renderer;
+        this.classList = [];
+    }
+    Object.defineProperty(NzClassListAddDirective.prototype, "nzClassListAdd", {
+        set: /**
+         * @param {?} list
+         * @return {?}
+         */
+        function (list) {
+            var _this = this;
+            this.classList.forEach(function (name) {
+                _this.renderer.removeClass(_this.elementRef.nativeElement, name);
+            });
+            list.forEach(function (name) {
+                _this.renderer.addClass(_this.elementRef.nativeElement, name);
+            });
+            this.classList = list;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    NzClassListAddDirective.decorators = [
+        { type: Directive, args: [{
+                    selector: '[nzClassListAdd]'
+                },] }
+    ];
+    /** @nocollapse */
+    NzClassListAddDirective.ctorParameters = function () { return [
+        { type: ElementRef },
+        { type: Renderer2 }
+    ]; };
+    NzClassListAddDirective.propDecorators = {
+        nzClassListAdd: [{ type: Input }]
+    };
+    return NzClassListAddDirective;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzStringTemplateOutletDirective = /** @class */ (function () {
+    function NzStringTemplateOutletDirective(viewContainer, defaultTemplate) {
+        this.viewContainer = viewContainer;
+        this.defaultTemplate = defaultTemplate;
+        this.inputTemplate = null;
+        this.inputViewRef = null;
+        this.defaultViewRef = null;
+    }
+    Object.defineProperty(NzStringTemplateOutletDirective.prototype, "nzStringTemplateOutlet", {
+        set: /**
+         * @param {?} value
+         * @return {?}
+         */
+        function (value) {
+            if (value instanceof TemplateRef) {
+                this.isTemplate = true;
+                this.inputTemplate = value;
+            }
+            else {
+                this.isTemplate = false;
+            }
+            this.updateView();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * @return {?}
+     */
+    NzStringTemplateOutletDirective.prototype.updateView = /**
+     * @return {?}
+     */
+    function () {
+        if (!this.isTemplate) {
+            /** use default template when input is string **/
+            if (!this.defaultViewRef) {
+                this.viewContainer.clear();
+                this.inputViewRef = null;
+                if (this.defaultTemplate) {
+                    this.defaultViewRef = this.viewContainer.createEmbeddedView(this.defaultTemplate);
+                }
+            }
+        }
+        else {
+            /** use input template when input is templateRef **/
+            if (!this.inputViewRef) {
+                this.viewContainer.clear();
+                this.defaultViewRef = null;
+                if (this.inputTemplate) {
+                    this.inputViewRef = this.viewContainer.createEmbeddedView(this.inputTemplate);
+                }
+            }
+        }
+    };
+    NzStringTemplateOutletDirective.decorators = [
+        { type: Directive, args: [{
+                    selector: '[nzStringTemplateOutlet]'
+                },] }
+    ];
+    /** @nocollapse */
+    NzStringTemplateOutletDirective.ctorParameters = function () { return [
+        { type: ViewContainerRef },
+        { type: TemplateRef }
+    ]; };
+    NzStringTemplateOutletDirective.propDecorators = {
+        nzStringTemplateOutlet: [{ type: Input }]
+    };
+    return NzStringTemplateOutletDirective;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+var NzAddOnModule = /** @class */ (function () {
+    function NzAddOnModule() {
+    }
+    NzAddOnModule.decorators = [
+        { type: NgModule, args: [{
+                    imports: [CommonModule],
+                    exports: [NzStringTemplateOutletDirective, NzClassListAddDirective],
+                    declarations: [NzStringTemplateOutletDirective, NzClassListAddDirective]
+                },] }
+    ];
+    return NzAddOnModule;
 }());
 
 /**
@@ -787,7 +1016,7 @@ var NzPopoverModule = /** @class */ (function () {
                     entryComponents: [NzPopoverComponent],
                     exports: [NzPopoverDirective, NzPopoverComponent],
                     declarations: [NzPopoverDirective, NzPopoverComponent],
-                    imports: [CommonModule, OverlayModule]
+                    imports: [CommonModule, OverlayModule, NzAddOnModule]
                 },] }
     ];
     return NzPopoverModule;
@@ -1579,6 +1808,24 @@ var TourAnchorDirective = /** @class */ (function () {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+var NzToolTipModule = /** @class */ (function () {
+    function NzToolTipModule() {
+    }
+    NzToolTipModule.decorators = [
+        { type: NgModule, args: [{
+                    declarations: [NzToolTipComponent, NzTooltipDirective],
+                    exports: [NzToolTipComponent, NzTooltipDirective],
+                    imports: [CommonModule, OverlayModule, NzAddOnModule],
+                    entryComponents: [NzToolTipComponent]
+                },] }
+    ];
+    return NzToolTipModule;
+}());
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 var NgxAppTour = /** @class */ (function () {
     function NgxAppTour() {
     }
@@ -1602,7 +1849,7 @@ var NgxAppTour = /** @class */ (function () {
                     declarations: [TourAnchorDirective, TourStepComponent],
                     entryComponents: [TourStepComponent],
                     exports: [TourAnchorDirective],
-                    imports: [CommonModule, OverlayModule, NzPopoverModule]
+                    imports: [CommonModule, OverlayModule, NzPopoverModule, NzToolTipModule]
                 },] }
     ];
     return NgxAppTour;
@@ -1618,6 +1865,6 @@ var NgxAppTour = /** @class */ (function () {
  * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
 
-export { NgxAppTour, TourService, TourState, TourAnchorDirective, TourStepComponent as ɵb, fadeAnimation as ɵd, NzPopoverComponent as ɵc, NzPopoverComponent as ɵf, NzPopoverDirective as ɵg, NzPopoverModule as ɵe, TourBackdropService as ɵa };
+export { NgxAppTour, TourService, TourState, TourAnchorDirective, TourStepComponent as ɵb, NzAddOnModule as ɵj, NzClassListAddDirective as ɵl, NzStringTemplateOutletDirective as ɵk, fadeAnimation as ɵd, NzPopoverComponent as ɵc, NzPopoverComponent as ɵf, NzPopoverDirective as ɵh, NzPopoverModule as ɵe, NzToolTipComponent as ɵg, NzTooltipDirective as ɵi, NzToolTipModule as ɵm, TourBackdropService as ɵa };
 
 //# sourceMappingURL=ngx-app-tour.js.map
