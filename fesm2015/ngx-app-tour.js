@@ -1118,7 +1118,7 @@ class TourBackdropService {
         const shadowColor = color ? color : 'rgba(0, 0, 0, 0.7)';
         /** @type {?} */
         let styles = {
-            'box-shadow': `0 0 0 1999px ${shadowColor}`,
+            'outline': `9999px solid ${shadowColor}`,
             'border-radius': radius ? radius : '100%',
         };
         if (!this.currentBoundingRect) {
